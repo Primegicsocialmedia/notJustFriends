@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Pressable } from "react-native";
 import LikeImage from "../../assets/images/like.png";
 import {
   Entypo,
@@ -6,16 +6,20 @@ import {
   FontAwesome5,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 
+const FeedPost = ({ post }) => {
+  const [isLiked, setIsLiked] = useState(false);
 
-
-const FeedPost = ({post}) => {
-
-    
+  const navigation = useNavigation();
   return (
-    <View style={styles.post}>
+    <Pressable style={styles.post}>
       {/* Header */}
-      <View style={styles.header}>
+      <Pressable
+        style={styles.header}
+        onPress={() => navigation.navigate("Profile", { id: post.User.id })}
+      >
         <Image source={{ uri: post.User.image }} style={styles.profileImage} />
         <View>
           <Text style={styles.name}>{post.User.name}</Text>
@@ -27,12 +31,13 @@ const FeedPost = ({post}) => {
           color="gray"
           style={styles.icon}
         />
-      </View>
+      </Pressable>
 
       {/* Body */}
       {post.description && (
         <Text style={styles.description}>{post.description}</Text>
       )}
+
       {post.image && (
         <Image source={{ uri: post.image }} style={styles.image} />
       )}
@@ -46,25 +51,34 @@ const FeedPost = ({post}) => {
           <Text style={styles.likedBy}>
             Elon Musk and {post.numberOfLikes} others
           </Text>
-          <Text style={styles.numberOfShares}>
-            {post.numberOfShares} shares
-          </Text>
+          <Text style={styles.shares}>{post.numberOfShares} shares</Text>
         </View>
-        {/* Buttons row */}
+        {/* Buttons Row  */}
         <View style={styles.buttonsRow}>
-          {/* Like button */}
-          <View style={styles.iconButton}>
-            <AntDesign name="like2" size={18} color="gray" />
-            <Text style={styles.iconButtonText}>Like</Text>
-          </View>
+          <Pressable
+            onPress={() => setIsLiked(!isLiked)}
+            style={styles.iconButton}
+          >
+            <AntDesign
+              name="like2"
+              size={18}
+              color={isLiked ? "royalblue" : "gray"}
+            />
+            <Text
+              style={[
+                styles.iconButtonText,
+                { color: isLiked ? "royalblue" : "gray" },
+              ]}
+            >
+              Like
+            </Text>
+          </Pressable>
 
-          {/* Comment button */}
           <View style={styles.iconButton}>
-            <FontAwesome5 name="comment-alt" size={16} color="gray" />
+            <FontAwesome5 name="comment-alt" size={18} color="gray" />
             <Text style={styles.iconButtonText}>Comment</Text>
           </View>
 
-          {/* Share button */}
           <View style={styles.iconButton}>
             <MaterialCommunityIcons
               name="share-outline"
@@ -75,22 +89,20 @@ const FeedPost = ({post}) => {
           </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   post: {
-    width: "100%",
-    marginVertical: 10,
+    marginVertical: 5,
     backgroundColor: "#fff",
   },
-
   // Header
   header: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
     padding: 10,
   },
   profileImage: {
@@ -121,7 +133,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
-  //Footer
+  // Footer
   footer: {
     paddingHorizontal: 10,
   },
@@ -139,12 +151,12 @@ const styles = StyleSheet.create({
   likedBy: {
     color: "gray",
   },
-  numberOfShares: {
+  shares: {
     marginLeft: "auto",
     color: "gray",
   },
 
-  //Buttons Row
+  // Buttons row
   buttonsRow: {
     marginVertical: 10,
     flexDirection: "row",
@@ -155,8 +167,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconButtonText: {
-    color: "gray",
     marginLeft: 5,
+    color: "gray",
     fontWeight: "500",
   },
 });
